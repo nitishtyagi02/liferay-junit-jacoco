@@ -1,0 +1,4 @@
+Bundle-Name: portlet-junit-sample
+Bundle-SymbolicName: com.nitish.junit.sample
+Bundle-Version: 1.0.0
+Export-Package: com.nitish.junit.sample.constants

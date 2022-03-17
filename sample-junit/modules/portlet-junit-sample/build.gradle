@@ -1,0 +1,49 @@
+dependencies {
+	compileOnly group: "com.liferay.portal", name: "release.dxp.api"
+	cssBuilder group: "com.liferay", name: "com.liferay.css.builder", version: "3.0.2"
+	
+
+		testCompile('junit:junit:4.12'){
+			exclude group: 'org.hamcrest'
+		}
+testImplementation group: 'org.hamcrest', name: 'hamcrest-library', version: '1.3'
+testImplementation group: 'org.mockito', name: 'mockito-core', version: '1.10.19'
+
+// https://mvnrepository.com/artifact/org.jacoco/org.jacoco.agent
+testImplementation group: 'org.jacoco', name: 'org.jacoco.agent', version: '0.7.4.201502262128'	
+}
+
+
+
+apply plugin: 'jacoco'
+
+jacoco {
+    toolVersion = '0.7.4.201502262128'
+}
+
+testIntegration { finalizedBy jacocoTestReport }
+
+task dumpJacoco {
+    def serverUrl = 'service:jmx:rmi:///jndi/rmi://localhost:8099/jmxrmi'
+    String beanName = "org.jacoco:type=Runtime"
+    def server = JmxFactory.connect(new JmxUrl(serverUrl)).MBeanServerConnection
+    def gmxb = new GroovyMBean(server, beanName)
+    
+    gmxb.dump(true)
+ }
+
+jacocoTestReport {
+    dependsOn dumpJacoco
+    
+    group = "Reporting"
+    reports {
+        xml.enabled true
+        csv.enabled false
+        html.destination "${buildDir}/reports/coverage"
+    }
+    executionData = files("${rootDir}/build/jacoco/testIntegration.exec") 
+}
+
+
+
+
